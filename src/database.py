@@ -3,6 +3,8 @@ import web, hashlib
 from hashlib import sha256
 from os import urandom
 
+db = None
+
 class Database:
 
     db = None
