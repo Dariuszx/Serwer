@@ -1,5 +1,5 @@
 # encoding: utf-8
-import web, json, database
+import web, json, database, tools
 from web import db, HTTPError
 
 
@@ -14,28 +14,26 @@ from threads import Thread, ThreadNotes
 urls = (
     '/login', 'LoginManager',                       #Menadżer logowania
 
-    '/user/(.+)/notification/(.*)', 'UserNotification',#Operacje na notyfikacjach użytkownika
+    '/user/notification/', 'UserNotification',#Operacje na notyfikacjach użytkownika
     '/user/(.*)', 'User',                           #Operacje na użytkownikach
 
     '/note/(.*)', 'Note',                           #Operacje na notatkach
-
     '/idea/(.+)/add/user/(.+)', 'IdeaAddUser',      #Dodawanie użytkownika do idei
     '/idea/(.+)/request', 'IdeaRequest',            #Zapytanie o dołączenie do tworzenia idei
     '/idea/(.+)/follow', 'IdeaFollow',              #Opcja śledzenia idei przez użytkownika
     '/idea/(.+)/member', 'IdeaMembers',             #Lista współtworzących ideę
     '/idea/(.+)/thread','IdeaThreads',              #Lista wątków danej idei
-    '/idea/(.*)', 'Idea',                           #Informacje o idei
+    '/idea/(.*)', 'Idea',                           #Operacje na idei
 
     '/thread/(.+)/note', 'ThreadNotes',             #Notatki konkretnego wątu
     '/thread/(.*)', 'Thread',                       #Operacje na konkretnym wątku
 )
 
 #Łącze się z bazą danych
-db = web.database(dbn='mysql', user='dariusz', pw='***', db='dariusz_idea_project')
+mysql = web.database(dbn='mysql', user='dariusz', pw='****', db='dariusz_idea_project')
 
 #Dzięki obiektowi tej klasy mogę operować na bazie danych
-database.db = database.Database(db)
-
+tools.db = database.Database(mysql)
 
 
 
