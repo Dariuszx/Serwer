@@ -14,10 +14,11 @@ from threads import Thread, ThreadNotes
 urls = (
     '/login', 'LoginManager',                       #Menadżer logowania
 
-    '/user/notification/', 'UserNotification',#Operacje na notyfikacjach użytkownika
+    '/user/notification/', 'UserNotification',      #Operacje na notyfikacjach użytkownika
     '/user/(.*)', 'User',                           #Operacje na użytkownikach
 
     '/note/(.*)', 'Note',                           #Operacje na notatkach
+
     '/idea/(.+)/add/user/(.+)', 'IdeaAddUser',      #Dodawanie użytkownika do idei
     '/idea/(.+)/request', 'IdeaRequest',            #Zapytanie o dołączenie do tworzenia idei
     '/idea/(.+)/follow', 'IdeaFollow',              #Opcja śledzenia idei przez użytkownika
@@ -30,7 +31,7 @@ urls = (
 )
 
 #Łącze się z bazą danych
-mysql = web.database(dbn='mysql', user='dariusz', pw='***', db='dariusz_idea_project')
+mysql = web.database(dbn='mysql', user='dariusz', pw='5qnCUxyAjnY2CUpZ', db='dariusz_idea_project')
 
 #Dzięki obiektowi tej klasy mogę operować na bazie danych
 tools.db = database.Database(mysql)

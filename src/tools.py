@@ -53,5 +53,3 @@ def get_token(user_id):
         return tokens[user_id]
     else:
         return None
-
-

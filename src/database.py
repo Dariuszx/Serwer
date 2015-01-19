@@ -75,6 +75,20 @@ class Database:
 
         return None
 
+    def check_thread_id(self, thread_id):
+        if thread_id == None:
+            return False
+        elif not thread_id.isdigit():
+            return False
+
+        query = "SELECT 1 FROM idea_threads WHERE thread_id=" + thread_id
+        result = self.db.query(query)
+
+        if not result:
+            return False
+        else:
+            return True
+
     #GETS
     def get_user_data(self, login):
         myvar = dict(name=login)
@@ -114,6 +128,29 @@ ON idea.user_id = users.user_id " + where + " LIMIT 10"
         else:
             return result
 
+    def get_thread(self, thread_id = None, idea_id = None):
+
+        query_beginning = "SELECT * FROM idea_threads "
+        query_end = ""
+
+        if thread_id != None and not self.check_thread_id(thread_id):
+            raise web.NotFound()
+        elif idea_id != None and not self.check_idea_id(idea_id):
+            raise web.NotFound()
+        elif idea_id != None:
+            query_end = "WHERE idea_id=" + idea_id
+        elif thread_id != None:
+            query_end = "WHERE thread_id=" + thread_id
+
+        query = query_beginning + query_end
+
+        result = self.db.query(query)
+        return result
+
+    def get_salted_password(self, password, salt):
+        password_encrypted = sha256(password.encode('utf-8') + "" + salt)
+        return password_encrypted.hexdigest()
+
     #ADDS
     def add_idea(self, user_id, title, right_id=None, background_image=None):
     #TODO dopisać obsługe wczytywania do bazy danych obrazków tła i praw widoczności
@@ -137,9 +174,8 @@ ON idea.user_id = users.user_id " + where + " LIMIT 10"
         else:
             return True
 
-
     #EDITS
-    def edit_idea(self, idea_id, data):
+    def edit_idea(self, data):
 
         what = ""
 
@@ -151,9 +187,14 @@ ON idea.user_id = users.user_id " + where + " LIMIT 10"
 
         self.db.query(query)
 
-    def get_salted_password(self, password, salt):
-        password_encrypted = sha256(password.encode('utf-8') + "" + salt)
-        return password_encrypted.hexdigest()
+    def edit_thread(self, data):
+        if not self.check_thread_id(data.thread_id):
+            raise web.NotFound()
+        else:
+            query = "UPDATE idea_threads SET overview=\"" + data.overview + "\" WHERE thread_id=" + data.thread_id
+
+            result = self.db.query(query)
+
 
     #DELETE
     def delete_idea(self, idea_id):
