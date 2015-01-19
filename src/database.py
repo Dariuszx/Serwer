@@ -53,6 +53,9 @@ class Database:
 
     def check_idea_id(self, idea_id):
 
+        if not idea_id.isdigit():
+            return False
+
         query = "SELECT 1 FROM idea WHERE idea_id=" + idea_id
         result = self.db.query(query)
 
@@ -95,15 +98,21 @@ class Database:
             return result[0]
 
     def get_idea(self, idea_id):
+
+        where = ""
+
+        if idea_id:
+            where = "WHERE idea.idea_id="+idea_id
+
         query = "SELECT idea.title, idea.date, users.user_id, users.login FROM idea INNER JOIN users \
-ON idea.user_id = users.user_id WHERE idea.idea_id="+idea_id
+ON idea.user_id = users.user_id " + where + " LIMIT 10"
 
         result = self.db.query(query)
 
         if not result:
             raise web.NotFound("Nie ma takiej idei")
         else:
-            return result[0]
+            return result
 
     #ADDS
     def add_idea(self, user_id, title, right_id=None, background_image=None):
@@ -113,6 +122,21 @@ ON idea.user_id = users.user_id WHERE idea.idea_id="+idea_id
         else:
             query = self.db.insert('idea', user_id=user_id, right_id=1, title=title)
             #self.db.query(query)
+
+    def add_thread(self, idea_id, user_id, overview):
+        if not self.check_idea_id(idea_id) and not self.check_user_id(user_id):
+            raise web.NotFound()
+
+        #TODO warunek na to czy dany user_id może dodać wątek w idei
+        if not True:
+            raise web.Unauthorized()
+
+        query = "INSERT INTO idea_threads (idea_id, overview) VALUES (" + idea_id + ", \"" + overview + "\")";
+        if self.db.query(query) == 0:
+            return False
+        else:
+            return True
+
 
     #EDITS
     def edit_idea(self, idea_id, data):
@@ -130,3 +154,13 @@ ON idea.user_id = users.user_id WHERE idea.idea_id="+idea_id
     def get_salted_password(self, password, salt):
         password_encrypted = sha256(password.encode('utf-8') + "" + salt)
         return password_encrypted.hexdigest()
+
+    #DELETE
+    def delete_idea(self, idea_id):
+
+        if not self.check_idea_id(idea_id):
+            return False
+        else:
+            query = "DELETE FROM idea WHERE idea_id=" + idea_id
+            self.db.query(query)
+            return True

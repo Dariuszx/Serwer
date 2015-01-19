@@ -1,5 +1,5 @@
 # encoding: utf-8
-import tools, web
+import tools, web, json
 
 class Idea:
 
@@ -18,8 +18,8 @@ class Idea:
         else:
             tools.db.add_idea(data.user_id, data.title)
 
+    #Aktualizacja konkretnej idei
     def PUT(self, idea_id=None):
-
         data = web.input()
 
         if not data:
@@ -32,6 +32,12 @@ class Idea:
             else:
                 tools.db.edit_idea(idea_id, data)
 
+    #Usuwanie konkretnej idei
+    def DELETE(self, idea_id=None):
+        if not tools.db.delete_idea(idea_id):
+            raise web.NotFound()
+        else:
+            return "działa"
 
 class IdeaMembers:
 

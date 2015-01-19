@@ -30,7 +30,7 @@ urls = (
 )
 
 #Łącze się z bazą danych
-mysql = web.database(dbn='mysql', user='dariusz', pw='****', db='dariusz_idea_project')
+mysql = web.database(dbn='mysql', user='dariusz', pw='***', db='dariusz_idea_project')
 
 #Dzięki obiektowi tej klasy mogę operować na bazie danych
 tools.db = database.Database(mysql)
