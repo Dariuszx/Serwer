@@ -43,10 +43,14 @@ class Database:
                 return userid_db
 
     def check_user_id(self, user_id):
+
+        if not user_id.isdigit():
+            return False
+
         query = "SELECT 1 FROM users WHERE user_id="+user_id
         result = self.db.query(query)
 
-        if not result:
+        if len(result) == 0:
             return False
         else:
             return True
@@ -59,7 +63,7 @@ class Database:
         query = "SELECT 1 FROM idea WHERE idea_id=" + idea_id
         result = self.db.query(query)
 
-        if not result:
+        if len(result) == 0:
             return False
         else:
             return True
@@ -84,7 +88,7 @@ class Database:
         query = "SELECT 1 FROM idea_threads WHERE thread_id=" + thread_id
         result = self.db.query(query)
 
-        if not result:
+        if len(result) == 0:
             return False
         else:
             return True
@@ -161,7 +165,7 @@ ON idea.user_id = users.user_id " + where + " LIMIT 10"
             #self.db.query(query)
 
     def add_thread(self, idea_id, user_id, overview):
-        if not self.check_idea_id(idea_id) and not self.check_user_id(user_id):
+        if not self.check_idea_id(idea_id) or not self.check_user_id(user_id):
             raise web.NotFound()
 
         #TODO warunek na to czy dany user_id może dodać wątek w idei

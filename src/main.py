@@ -12,22 +12,22 @@ from threads import Thread, ThreadNotes
 
 
 urls = (
-    '/login', 'LoginManager',                       #Menadżer logowania
+    '/login', 'LoginManager',                       #DONEMenadżer logowania
 
-    '/user/notification/', 'UserNotification',      #Operacje na notyfikacjach użytkownika
-    '/user/(.*)', 'User',                           #Operacje na użytkownikach
+    '/user/notification/', 'UserNotification',      #TODO Operacje na notyfikacjach użytkownika
+    '/user/(.*)', 'User',                           #DONEOperacje na użytkownikach
 
     '/note/(.*)', 'Note',                           #Operacje na notatkach
 
-    '/idea/(.+)/add/user/(.+)', 'IdeaAddUser',      #Dodawanie użytkownika do idei
-    '/idea/(.+)/request', 'IdeaRequest',            #Zapytanie o dołączenie do tworzenia idei
-    '/idea/(.+)/follow', 'IdeaFollow',              #Opcja śledzenia idei przez użytkownika
-    '/idea/(.+)/member', 'IdeaMembers',             #Lista współtworzących ideę
-    '/idea/(.+)/thread','IdeaThreads',              #Lista wątków danej idei
-    '/idea/(.*)', 'Idea',                           #Operacje na idei
+    '/idea/adduser/(.*)', 'IdeaAddUser',            #Dodawanie użytkownika do idei
+    '/idea/request/(.*)', 'IdeaRequest',            #Zapytanie o dołączenie do tworzenia idei
+    '/idea/follow/(.*)', 'IdeaFollow',              #Opcja śledzenia idei przez użytkownika
+    '/idea/member/(.*)', 'IdeaMembers',             #Lista współtworzących ideę
+    '/idea/thread/(.*)','IdeaThreads',              #Lista wątków danej idei
+    '/idea/(.*)', 'Idea',                           #DONEOperacje na idei
 
-    '/thread/(.+)/note', 'ThreadNotes',             #Notatki konkretnego wątu
-    '/thread/(.*)', 'Thread',                       #Operacje na konkretnym wątku
+    '/thread/note/(.*)', 'ThreadNotes',             #Notatki konkretnego wątu
+    '/thread/(.*)', 'Thread',                       #DONEOperacje na konkretnym wątku
 )
 
 #Łącze się z bazą danych
@@ -36,9 +36,13 @@ mysql = web.database(dbn='mysql', user='dariusz', pw='5qnCUxyAjnY2CUpZ', db='dar
 #Dzięki obiektowi tej klasy mogę operować na bazie danych
 tools.db = database.Database(mysql)
 
+class App(web.application):
+    def run(self, port=8001, *middleware):
+        func = self.wsgifunc(*middleware)
+        return web.httpserver.runsimple(func, ('0.0.0.0',port))
 
 
 if __name__ == "__main__":
-    app = web.application(urls, globals())
+    app = App(urls, globals())
     app.internalerror = web.debugerror
-    app.run()
+    app.run(port=8001)

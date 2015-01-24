@@ -1,22 +1,25 @@
 # encoding: utf-8
 import tools, web, json
 
+
 class Idea:
 
     #Pobieram informacje o konkretnej idei
     def GET(self, idea_id=None):
+        print idea_id
         idea = tools.db.get_idea(idea_id)
-        return idea
+        return tools.respond_database_row(idea)
 
     #Tworzenie nowej idei
     def POST(self, idea_id=None):
         #TODO dopisać wczytywanie obrazków ŧła i nadawania praw
         data = web.input()
 
-        if not data.user_id and not data.title:
+        if not data.has_key('user_id') and not data.has_key('title'):
             raise web.NotAcceptable("Nie podano wystarczających danych")
         else:
             tools.db.add_idea(data.user_id, data.title)
+            return tools.respond(tools.status_ok)
 
     #Aktualizacja konkretnej idei
     def PUT(self, idea_id=None):
@@ -31,6 +34,7 @@ class Idea:
                 raise web.BadRequest("Nie podano danych do zmiany")
             else:
                 tools.db.edit_idea(idea_id, data)
+                return tools.respond(tools.status_ok)
 
     #Usuwanie konkretnej idei
     def DELETE(self, idea_id=None):

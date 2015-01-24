@@ -1,9 +1,12 @@
 # encoding: utf-8
 
-import calendar, time, web
+import calendar, time, web, json, json_utils
 from os import urandom
+from bson import json_util
 
 db = None
+status_ok = {'Status':200}
+status_error = {'Status':400}
 
 class Token:
 
@@ -25,6 +28,18 @@ class Token:
             return True
 
 tokens = {}
+
+
+def respond_database_row(rows):
+    json_row = []
+    for v in rows:
+        json_row.append(v)
+    return respond(json_row)
+
+
+def respond(data):
+    web.header('Content-Type', 'application/json')
+    return json.dumps(data, default=json_util.default)
 
 def make_token():
     return urandom(32).encode('base-64')

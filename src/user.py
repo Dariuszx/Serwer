@@ -5,22 +5,22 @@ class User:
 
     #Tworzę nowego użytkownika
     def POST(self, user_id=None):
-
         dane = web.input()
         status = None
 
-        if dane.login and dane.password: #Czy wysłano odpowiednie dane
-            if len(dane.login) < 4 or len(dane.password) < 6: #Czy długość się zgadza?
-                raise web.NotAcceptable()
-            elif not tools.db.check_login_avavailability(dane.login): #Czy login zajęty?
-                raise web.NotAcceptable()
-            else: #Rejestruje użytkownika
-                tools.db.register_user(dane.login, dane.password)
+        if not dane.has_key('login') or not dane.has_key('password'): #Czy wysłano odpowiednie dane
+            raise web.BadRequest()
 
+        if len(dane.login) < 4 or len(dane.password) < 6: #Czy długość się zgadza?
+            raise web.NotAcceptable()
+        elif not tools.db.check_login_avavailability(dane.login): #Czy login zajęty?
+            raise web.NotAcceptable()
+        else: #Rejestruje użytkownika
+            tools.db.register_user(dane.login, dane.password)
 
         user_data = tools.db.get_user_data(dane.login)
 
-        return json.dumps({'user_id':user_data.user_id, 'login':user_data.login})
+        return tools.respond({'user_id':user_data.user_id, 'login':user_data.login})
 
     #Edycja użytkownika
     def PUT(self):
@@ -35,7 +35,7 @@ class User:
 
         user = tools.db.get_user(user_id)
 
-        return user
+        print tools.respond(user)
 
     def DELETE(self, user_id=None):
         #TODO usuwanie użytkownika

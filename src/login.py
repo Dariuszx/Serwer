@@ -4,16 +4,16 @@ import web, json, database, tools
 
 class LoginManager:
 
+    #Loguje się do systemu
     def POST(self):
         dane = web.input()
 
-        if not dane.login and not dane.password:
+        if not dane.has_key('login') and not dane.has_key('password'):
             raise web.Unauthorized()
 
         user_id = tools.db.check_login_credentials(dane.login, dane.password)
 
-        if user_id == -1:
+        if not user_id:
             raise web.Unauthorized()
         else:
-            tools.add_token(user_id)
-            return json.dumps({'user_id':user_id, 'token':tools.get_token(user_id)})
+            return tools.respond({'user_id':user_id})

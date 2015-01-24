@@ -15,13 +15,11 @@ class Thread:
         if not tools.db.add_thread(data.idea_id, data.user_id, data.overview):
             raise web.NotFound()
         else:
-            return "działa"
+            return tools.respond(tools.status_ok)
 
     def GET(self, thread_id=None):
         result = tools.db.get_thread(thread_id)
-
-        if result:
-            return result
+        return tools.respond_database_row(result)
 
     def PUT(self, thread_id=None):
             data = web.input()
@@ -32,6 +30,11 @@ class Thread:
                 raise web.BadRequest()
             else:
                 result = tools.db.edit_thread(data)
+                return tools.respond(tools.status_ok)
+
+    #TODO zrobić usuwanie wątków
+    def DELETE(self, thread_id=None):
+        return tools.respond(tools.status_error)
 
 
 class ThreadNotes:
