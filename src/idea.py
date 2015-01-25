@@ -6,7 +6,6 @@ class Idea:
 
     #Pobieram informacje o konkretnej idei
     def GET(self, idea_id=None):
-        print idea_id
         idea = tools.db.get_idea(idea_id)
         return tools.respond_database_row(idea)
 
@@ -15,8 +14,8 @@ class Idea:
         #TODO dopisać wczytywanie obrazków ŧła i nadawania praw
         data = web.input()
 
-        if not data.has_key('user_id') and not data.has_key('title'):
-            raise web.NotAcceptable("Nie podano wystarczających danych")
+        if not data.has_key('user_id') or not data.has_key('title'):
+            raise web.BadRequest("Nie podano wystarczających danych")
         else:
             tools.db.add_idea(data.user_id, data.title)
             return tools.respond(tools.status_ok)
@@ -55,8 +54,11 @@ class IdeaFollow:
 
 class IdeaThreads:
 
-    def GET(self, user_id, note_id=None):
-        return NotImplemented()
+    def GET(self, idea_id=None):
+        result = tools.db.get_thread(None, idea_id)
+        return tools.respond_database_row(result)
+
+
 
 class IdeaRequest:
 

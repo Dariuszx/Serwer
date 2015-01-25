@@ -38,5 +38,6 @@ class Thread:
 
 
 class ThreadNotes:
-    def GET(self, idea_id=None, thread_id=None):
-        return NotImplemented()
+    def GET(self, thread_id=None):
+        result = tools.db.get_thread_notes(thread_id)
+        return tools.respond_database_row(result)

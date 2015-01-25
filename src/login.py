@@ -13,7 +13,7 @@ class LoginManager:
 
         user_id = tools.db.check_login_credentials(dane.login, dane.password)
 
-        if not user_id:
+        if not user_id or user_id == -1:
             raise web.Unauthorized()
         else:
             return tools.respond({'user_id':user_id})

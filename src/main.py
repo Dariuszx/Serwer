@@ -4,8 +4,8 @@ from web import db, HTTPError
 
 
 from login import LoginManager
-from user import User, UserNotification
-from idea import Idea, IdeaFollow, IdeaMembers
+from user import User, UserNotification, UserIdea
+from idea import Idea, IdeaFollow, IdeaMembers, IdeaThreads
 from note import Note
 from threads import Thread, ThreadNotes
 
@@ -14,9 +14,9 @@ from threads import Thread, ThreadNotes
 urls = (
     '/login', 'LoginManager',                       #DONEMenadżer logowania
 
+    '/user/idea/(.*)', 'UserIdea',
     '/user/notification/', 'UserNotification',      #TODO Operacje na notyfikacjach użytkownika
     '/user/(.*)', 'User',                           #DONEOperacje na użytkownikach
-
     '/note/(.*)', 'Note',                           #Operacje na notatkach
 
     '/idea/adduser/(.*)', 'IdeaAddUser',            #Dodawanie użytkownika do idei

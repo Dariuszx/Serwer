@@ -1,5 +1,5 @@
 # encoding: utf-8
-import web, hashlib
+import web, hashlib, json
 from hashlib import sha256
 from os import urandom
 
@@ -93,6 +93,10 @@ class Database:
         else:
             return True
 
+    #TODO
+    def check_note_id(self, note_id):
+        return True
+
     #GETS
     def get_user_data(self, login):
         myvar = dict(name=login)
@@ -115,14 +119,19 @@ class Database:
         else:
             return result[0]
 
-    def get_idea(self, idea_id):
+    def get_idea(self, idea_id, user_id=None):
 
         where = ""
 
         if idea_id:
             where = "WHERE idea.idea_id="+idea_id
+        elif user_id:
+            if not self.check_user_id(user_id):
+                raise web.NotAcceptable("Użytkownik o podanym id nie istnieje")
+            else:
+                where = "WHERE idea.user_id="+user_id
 
-        query = "SELECT idea.title, idea.date, users.user_id, users.login FROM idea INNER JOIN users \
+        query = "SELECT idea.idea_id, idea.title, idea.date, users.user_id, users.login FROM idea INNER JOIN users \
 ON idea.user_id = users.user_id " + where + " LIMIT 10"
 
         result = self.db.query(query)
@@ -155,6 +164,20 @@ ON idea.user_id = users.user_id " + where + " LIMIT 10"
         password_encrypted = sha256(password.encode('utf-8') + "" + salt)
         return password_encrypted.hexdigest()
 
+    def get_thread_notes(self, thread_id):
+        if not self.check_thread_id(thread_id):
+            return web.BadRequest()
+
+        query = "SELECT note.note_id, note.user_id, note.text, users.login FROM note " \
+"INNER JOIN users ON note.user_id = users.user_id WHERE note.thread_id = " + str(thread_id)
+
+        result = self.db.query(query)
+
+        if not result:
+            raise web.NotFound()
+        else:
+            return result
+
     #ADDS
     def add_idea(self, user_id, title, right_id=None, background_image=None):
     #TODO dopisać obsługe wczytywania do bazy danych obrazków tła i praw widoczności
@@ -172,7 +195,22 @@ ON idea.user_id = users.user_id " + where + " LIMIT 10"
         if not True:
             raise web.Unauthorized()
 
-        query = "INSERT INTO idea_threads (idea_id, overview) VALUES (" + idea_id + ", \"" + overview + "\")";
+        query = "INSERT INTO idea_threads (idea_id, overview) VALUES (" + idea_id + ", \"" + overview + "\")"
+        if self.db.query(query) == 0:
+            return False
+        else:
+            return True
+
+    def add_note(self, user_id, thread_id, content, note_id=None):
+        if not self.check_user_id(user_id) or not self.check_thread_id(thread_id) or (note_id != None and not self.check_note_id(note_id)):
+            raise web.NotFound()
+
+        #TODO edycja notatki
+        if note_id != None:
+            print "dodawania"
+        else:
+            query = "INSERT INTO note (thread_id, user_id, text) VALUES (" +thread_id + ", " + user_id + ", \"" + content + "\")"
+
         if self.db.query(query) == 0:
             return False
         else:

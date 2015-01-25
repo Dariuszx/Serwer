@@ -52,3 +52,10 @@ class UserNotification:
 
     def DELETE(self, user_id=None, notification_id=None):
         return NotImplemented()
+
+
+class UserIdea:
+
+    def GET(self, user_id=None):
+        idea = tools.db.get_idea(None, user_id)
+        return tools.respond_database_row(idea)
