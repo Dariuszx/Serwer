@@ -93,6 +93,20 @@ class Database:
         else:
             return True
 
+    def check_note_id(self, note_id):
+        if note_id == None:
+            return False
+        elif not note_id.isdigit():
+            return False
+
+        query = "SELECT 1 FROM note WHERE note_id=" + note_id
+        result = self.db.query(query)
+
+        if len(result) == 0:
+            return False
+        else:
+            return True
+
     #TODO
     def check_note_id(self, note_id):
         return True
@@ -178,6 +192,20 @@ ON idea.user_id = users.user_id " + where + " LIMIT 10"
         else:
             return result
 
+    def get_note(self, note_id):
+        if not self.check_note_id(note_id):
+            return web.NotFound()
+
+        query = "SELECT note.text, note.thread_id, users.login FROM note INNER JOIN users ON note.user_id = users.user_id " \
+"WHERE note.note_id = " + str(note_id)
+
+        result = self.db.query(query)
+
+        if not result:
+            raise web.NotFound()
+        else:
+            return result
+
     #ADDS
     def add_idea(self, user_id, title, right_id=None, background_image=None):
     #TODO dopisać obsługe wczytywania do bazy danych obrazków tła i praw widoczności
@@ -237,6 +265,15 @@ ON idea.user_id = users.user_id " + where + " LIMIT 10"
 
             result = self.db.query(query)
 
+    def edit_note(self, note_id, content):
+
+        if note_id == None or not self.check_note_id(note_id):
+            raise web.NotFound()
+
+        query = "UPDATE note SET text= \"" + content + " \" WHERE note_id = " + str(note_id)
+
+        self.db.query(query)
+
 
     #DELETE
     def delete_idea(self, idea_id):
@@ -247,3 +284,11 @@ ON idea.user_id = users.user_id " + where + " LIMIT 10"
             query = "DELETE FROM idea WHERE idea_id=" + idea_id
             self.db.query(query)
             return True
+
+    def delete_note(self, note_id):
+        if note_id == None or not self.check_note_id(note_id):
+            raise web.NotFound()
+
+        query = "DELETE FROM note WHERE note_id = " + str(note_id)
+        self.db.query(query)
+        return True

@@ -59,7 +59,6 @@ class IdeaThreads:
         return tools.respond_database_row(result)
 
 
-
 class IdeaRequest:
 
     def POST(self):
